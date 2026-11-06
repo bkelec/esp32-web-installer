@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ESP32 Web Installer</title>
+
+  <script type="module"
+    src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module">
+  </script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #101827;
+      color: white;
+      text-align: center;
+      padding: 60px 15px;
+    }
+    .card {
+      max-width: 440px;
+      margin: auto;
+      background: #1e293b;
+      padding: 30px;
+      border-radius: 14px;
+    }
+    button {
+      background: #16a34a;
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 17px;
+    }
+    p { color: #cbd5e1; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>ESP32 Web Installer</h1>
+    <p>Firmware Version 1.0.0</p>
+    <p>เชื่อมต่อ ESP32 ผ่านสาย USB</p>
+
+    <esp-web-install-button manifest="./manifest.json">
+      <button slot="activate">Install Firmware</button>
+      <span slot="unsupported">
+        กรุณาเปิดเว็บไซต์ด้วย Chrome หรือ Edge
+      </span>
+    </esp-web-install-button>
+
+    <p>สำหรับ ESP32 รุ่นธรรมดา</p>
+    <p>ห้ามเลือก Erase Flash ในการทดสอบนี้</p>
+  </div>
+</body>
+</html>
