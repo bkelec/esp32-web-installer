@@ -1,0 +1,16 @@
+{
+  "name": "PM16x32 outdoor",
+  "version": "",
+  "new_install_prompt_erase": true,
+  "builds": [
+    {
+      "chipFamily": "ESP32",
+      "parts": [
+        {
+          "path": "../source/PM16x32 outdoor.bin",
+          "offset": 65536
+        }
+      ]
+    }
+  ]
+}

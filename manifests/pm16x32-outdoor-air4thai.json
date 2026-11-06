@@ -1,0 +1,16 @@
+{
+  "name": "PM16x32 outdoor_air4thai",
+  "version": "",
+  "new_install_prompt_erase": true,
+  "builds": [
+    {
+      "chipFamily": "ESP32",
+      "parts": [
+        {
+          "path": "../source/PM16x32 outdoor_air4thai.bin",
+          "offset": 65536
+        }
+      ]
+    }
+  ]
+}

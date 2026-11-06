@@ -1,13 +1,13 @@
 {
-  "name": "ESP32 Firmware Test",
-  "version": "1.0.0",
+  "name": "PM16x32 indoor",
+  "version": "",
   "new_install_prompt_erase": true,
   "builds": [
     {
       "chipFamily": "ESP32",
       "parts": [
         {
-          "path": "firmware.bin",
+          "path": "../source/PM16x32 indoor.bin",
           "offset": 65536
         }
       ]

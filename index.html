@@ -24,11 +24,9 @@
     .product-image { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: #17263a; }
     .product-info { display: block; padding: 18px; }
     .product-name { display: block; margin-bottom: 5px; font-size: 1.15rem; font-weight: 700; }
-    .product-meta { color: #94a3b8; }
     .selected-badge { position: absolute; top: 12px; right: 12px; display: none; border-radius: 999px; padding: 6px 10px; background: #16a34a; color: white; font-size: .8rem; font-weight: 700; }
     .product-card[aria-pressed="true"] .selected-badge { display: block; }
     .installer-panel { max-width: 680px; margin: 0 auto; border: 1px solid #26364c; border-radius: 18px; padding: clamp(22px, 5vw, 34px); background: rgba(17,29,46,.94); text-align: center; }
-    .version { display: inline-block; margin: 4px 0 18px; border-radius: 999px; padding: 6px 11px; background: #1e3a5f; color: #bfdbfe; font-size: .9rem; }
     .install-button { border: 0; border-radius: 10px; padding: 14px 28px; background: #16a34a; color: white; cursor: pointer; font: inherit; font-size: 1.05rem; font-weight: 700; }
     .install-button:hover { background: #15803d; }
     .notice { margin: 20px 0 0; font-size: .92rem; line-height: 1.65; }
@@ -45,42 +43,49 @@
     <section aria-label="รายการสินค้า"><div id="product-grid" class="product-grid"></div></section>
     <section id="installer-panel" class="installer-panel" aria-live="polite">
       <h2 id="selected-name"></h2>
-      <span id="selected-version" class="version"></span>
       <p id="selected-description"></p>
       <div id="install-control"></div>
-      <p class="notice">รองรับ Chrome และ Edge บนคอมพิวเตอร์<br>โปรดตรวจสอบชื่อรุ่นให้ถูกต้องก่อนติดตั้ง</p>
+      <p class="notice">รองรับ Chrome และ Edge บนคอมพิวเตอร์<br>โปรดตรวจสอบชื่อรุ่นให้ถูกต้อง และไม่ต้องเลือก Erase Flash</p>
     </section>
   </main>
   <script>
-    // เพิ่มสินค้าใหม่ได้ที่รายการนี้ โดยสร้าง manifest และไฟล์ .bin ของแต่ละรุ่นแยกกัน
+    // ชื่อสินค้า รูป เฟิร์มแวร์ และ manifest ต้องจับคู่เป็นรุ่นเดียวกัน
     const products = [
       {
-        id: "esp32-standard",
-        name: "ESP32 รุ่นมาตรฐาน",
-        version: "1.0.0",
-        description: "เฟิร์มแวร์สำหรับบอร์ด ESP32 รุ่นมาตรฐาน",
-        image: "./images/esp32-standard.svg",
-        manifest: "./manifest.json"
+        id: "pm16x32-indoor",
+        name: "PM16x32 indoor",
+        description: "เฟิร์มแวร์ PM16x32 indoor สำหรับ ESP32",
+        image: "./source/PM16x32 indoor.jpg",
+        manifest: "./manifests/pm16x32-indoor.json"
+      },
+      {
+        id: "pm16x32-outdoor",
+        name: "PM16x32 outdoor",
+        description: "เฟิร์มแวร์ PM16x32 outdoor สำหรับ ESP32",
+        image: "./source/PM16x32 outdoor.jpg",
+        manifest: "./manifests/pm16x32-outdoor.json"
+      },
+      {
+        id: "pm16x32-outdoor-air4thai",
+        name: "PM16x32 outdoor_air4thai",
+        description: "เฟิร์มแวร์ PM16x32 outdoor_air4thai สำหรับ ESP32",
+        image: "./source/PM16x32 outdoor_air4thai.jpg",
+        manifest: "./manifests/pm16x32-outdoor-air4thai.json"
       }
-      // ตัวอย่างการเพิ่มรุ่น:
-      // { id: "product-b", name: "สินค้า รุ่น B", version: "2.0.0",
-      //   description: "เฟิร์มแวร์สำหรับสินค้า รุ่น B",
-      //   image: "./images/product-b.webp", manifest: "./manifests/product-b.json" }
     ];
 
     const productGrid = document.querySelector("#product-grid");
     const selectedName = document.querySelector("#selected-name");
-    const selectedVersion = document.querySelector("#selected-version");
     const selectedDescription = document.querySelector("#selected-description");
     const installControl = document.querySelector("#install-control");
 
-    function createInstaller(manifest) {
+    function createInstaller(manifest, productName) {
       const installer = document.createElement("esp-web-install-button");
       installer.setAttribute("manifest", manifest);
       const button = document.createElement("button");
       button.className = "install-button";
       button.setAttribute("slot", "activate");
-      button.textContent = "ติดตั้งเฟิร์มแวร์";
+      button.textContent = `ติดตั้ง ${productName}`;
       const unsupported = document.createElement("span");
       unsupported.className = "unsupported";
       unsupported.setAttribute("slot", "unsupported");
@@ -94,9 +99,8 @@
         card.setAttribute("aria-pressed", String(card.dataset.productId === product.id));
       });
       selectedName.textContent = product.name;
-      selectedVersion.textContent = `Firmware ${product.version}`;
       selectedDescription.textContent = product.description;
-      createInstaller(product.manifest);
+      createInstaller(product.manifest, product.name);
     }
 
     products.forEach((product) => {
@@ -105,7 +109,7 @@
       card.className = "product-card";
       card.dataset.productId = product.id;
       card.setAttribute("aria-pressed", "false");
-      card.setAttribute("aria-label", `เลือก ${product.name} เฟิร์มแวร์เวอร์ชัน ${product.version}`);
+      card.setAttribute("aria-label", `เลือกเฟิร์มแวร์ ${product.name}`);
       const image = document.createElement("img");
       image.className = "product-image";
       image.src = product.image;
@@ -115,13 +119,10 @@
       const name = document.createElement("span");
       name.className = "product-name";
       name.textContent = product.name;
-      const meta = document.createElement("span");
-      meta.className = "product-meta";
-      meta.textContent = `Firmware ${product.version}`;
       const badge = document.createElement("span");
       badge.className = "selected-badge";
       badge.textContent = "เลือกแล้ว";
-      info.append(name, meta);
+      info.append(name);
       card.append(image, info, badge);
       card.addEventListener("click", () => selectProduct(product));
       productGrid.append(card);
