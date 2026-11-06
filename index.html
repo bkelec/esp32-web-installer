@@ -1,57 +1,133 @@
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ESP32 Web Installer</title>
-
-  <script type="module"
-    src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module">
-  </script>
-
+  <meta name="description" content="เลือกสินค้าและติดตั้งเฟิร์มแวร์ ESP32 ผ่านสาย USB">
+  <title>ESP32 Firmware Installer</title>
+  <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #101827;
-      color: white;
-      text-align: center;
-      padding: 60px 15px;
-    }
-    .card {
-      max-width: 440px;
-      margin: auto;
-      background: #1e293b;
-      padding: 30px;
-      border-radius: 14px;
-    }
-    button {
-      background: #16a34a;
-      color: white;
-      border: none;
-      padding: 14px 28px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 17px;
-    }
-    p { color: #cbd5e1; }
+    :root { color-scheme: dark; font-family: Inter, "Noto Sans Thai", Arial, sans-serif; background: #08111f; color: #f8fafc; }
+    * { box-sizing: border-box; }
+    body { min-height: 100vh; margin: 0; background: radial-gradient(circle at 50% 0%, rgba(37,99,235,.25), transparent 38rem), #08111f; }
+    main { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 56px 0 72px; }
+    .hero { max-width: 680px; margin: 0 auto 36px; text-align: center; }
+    h1 { margin: 0 0 12px; font-size: clamp(2rem, 6vw, 3.4rem); line-height: 1.1; }
+    h2 { margin: 0 0 8px; }
+    p { color: #aebdd0; }
+    .hero p { margin: 0; font-size: 1.05rem; }
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 320px)); justify-content: center; gap: 18px; margin-bottom: 28px; }
+    .product-card { position: relative; width: 100%; overflow: hidden; border: 2px solid transparent; border-radius: 18px; padding: 0; background: #111d2e; color: inherit; text-align: left; cursor: pointer; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+    .product-card:hover { transform: translateY(-3px); border-color: #3b82f6; }
+    .product-card:focus-visible { outline: 3px solid #93c5fd; outline-offset: 3px; }
+    .product-card[aria-pressed="true"] { border-color: #22c55e; box-shadow: 0 0 0 4px rgba(34,199,94,.13); }
+    .product-image { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: #17263a; }
+    .product-info { display: block; padding: 18px; }
+    .product-name { display: block; margin-bottom: 5px; font-size: 1.15rem; font-weight: 700; }
+    .product-meta { color: #94a3b8; }
+    .selected-badge { position: absolute; top: 12px; right: 12px; display: none; border-radius: 999px; padding: 6px 10px; background: #16a34a; color: white; font-size: .8rem; font-weight: 700; }
+    .product-card[aria-pressed="true"] .selected-badge { display: block; }
+    .installer-panel { max-width: 680px; margin: 0 auto; border: 1px solid #26364c; border-radius: 18px; padding: clamp(22px, 5vw, 34px); background: rgba(17,29,46,.94); text-align: center; }
+    .version { display: inline-block; margin: 4px 0 18px; border-radius: 999px; padding: 6px 11px; background: #1e3a5f; color: #bfdbfe; font-size: .9rem; }
+    .install-button { border: 0; border-radius: 10px; padding: 14px 28px; background: #16a34a; color: white; cursor: pointer; font: inherit; font-size: 1.05rem; font-weight: 700; }
+    .install-button:hover { background: #15803d; }
+    .notice { margin: 20px 0 0; font-size: .92rem; line-height: 1.65; }
+    .unsupported { display: block; border-radius: 10px; padding: 12px; background: #7f1d1d; color: #fecaca; }
+    @media (max-width: 520px) { main { padding-top: 34px; } .product-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>ESP32 Web Installer</h1>
-    <p>Firmware Version 1.0.0</p>
-    <p>เชื่อมต่อ ESP32 ผ่านสาย USB</p>
+  <main>
+    <header class="hero">
+      <h1>เลือกเฟิร์มแวร์สำหรับสินค้าของคุณ</h1>
+      <p>กดที่รูปสินค้า เชื่อมต่ออุปกรณ์ด้วยสาย USB แล้วเริ่มติดตั้ง</p>
+    </header>
+    <section aria-label="รายการสินค้า"><div id="product-grid" class="product-grid"></div></section>
+    <section id="installer-panel" class="installer-panel" aria-live="polite">
+      <h2 id="selected-name"></h2>
+      <span id="selected-version" class="version"></span>
+      <p id="selected-description"></p>
+      <div id="install-control"></div>
+      <p class="notice">รองรับ Chrome และ Edge บนคอมพิวเตอร์<br>โปรดตรวจสอบชื่อรุ่นให้ถูกต้องก่อนติดตั้ง</p>
+    </section>
+  </main>
+  <script>
+    // เพิ่มสินค้าใหม่ได้ที่รายการนี้ โดยสร้าง manifest และไฟล์ .bin ของแต่ละรุ่นแยกกัน
+    const products = [
+      {
+        id: "esp32-standard",
+        name: "ESP32 รุ่นมาตรฐาน",
+        version: "1.0.0",
+        description: "เฟิร์มแวร์สำหรับบอร์ด ESP32 รุ่นมาตรฐาน",
+        image: "./images/esp32-standard.svg",
+        manifest: "./manifest.json"
+      }
+      // ตัวอย่างการเพิ่มรุ่น:
+      // { id: "product-b", name: "สินค้า รุ่น B", version: "2.0.0",
+      //   description: "เฟิร์มแวร์สำหรับสินค้า รุ่น B",
+      //   image: "./images/product-b.webp", manifest: "./manifests/product-b.json" }
+    ];
 
-    <esp-web-install-button manifest="./manifest.json">
-      <button slot="activate">Install Firmware</button>
-      <span slot="unsupported">
-        กรุณาเปิดเว็บไซต์ด้วย Chrome หรือ Edge
-      </span>
-    </esp-web-install-button>
+    const productGrid = document.querySelector("#product-grid");
+    const selectedName = document.querySelector("#selected-name");
+    const selectedVersion = document.querySelector("#selected-version");
+    const selectedDescription = document.querySelector("#selected-description");
+    const installControl = document.querySelector("#install-control");
 
-    <p>สำหรับ ESP32 รุ่นธรรมดา</p>
-    <p>ห้ามเลือก Erase Flash ในการทดสอบนี้</p>
-  </div>
+    function createInstaller(manifest) {
+      const installer = document.createElement("esp-web-install-button");
+      installer.setAttribute("manifest", manifest);
+      const button = document.createElement("button");
+      button.className = "install-button";
+      button.setAttribute("slot", "activate");
+      button.textContent = "ติดตั้งเฟิร์มแวร์";
+      const unsupported = document.createElement("span");
+      unsupported.className = "unsupported";
+      unsupported.setAttribute("slot", "unsupported");
+      unsupported.textContent = "เบราว์เซอร์นี้ไม่รองรับ กรุณาเปิดด้วย Chrome หรือ Edge";
+      installer.append(button, unsupported);
+      installControl.replaceChildren(installer);
+    }
+
+    function selectProduct(product) {
+      document.querySelectorAll(".product-card").forEach((card) => {
+        card.setAttribute("aria-pressed", String(card.dataset.productId === product.id));
+      });
+      selectedName.textContent = product.name;
+      selectedVersion.textContent = `Firmware ${product.version}`;
+      selectedDescription.textContent = product.description;
+      createInstaller(product.manifest);
+    }
+
+    products.forEach((product) => {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "product-card";
+      card.dataset.productId = product.id;
+      card.setAttribute("aria-pressed", "false");
+      card.setAttribute("aria-label", `เลือก ${product.name} เฟิร์มแวร์เวอร์ชัน ${product.version}`);
+      const image = document.createElement("img");
+      image.className = "product-image";
+      image.src = product.image;
+      image.alt = product.name;
+      const info = document.createElement("span");
+      info.className = "product-info";
+      const name = document.createElement("span");
+      name.className = "product-name";
+      name.textContent = product.name;
+      const meta = document.createElement("span");
+      meta.className = "product-meta";
+      meta.textContent = `Firmware ${product.version}`;
+      const badge = document.createElement("span");
+      badge.className = "selected-badge";
+      badge.textContent = "เลือกแล้ว";
+      info.append(name, meta);
+      card.append(image, info, badge);
+      card.addEventListener("click", () => selectProduct(product));
+      productGrid.append(card);
+    });
+
+    if (products.length > 0) selectProduct(products[0]);
+  </script>
 </body>
 </html>
