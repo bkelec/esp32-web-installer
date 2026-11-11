@@ -31,6 +31,8 @@
     .install-button:hover { background: #15803d; }
     .notice { margin: 20px 0 0; font-size: .92rem; line-height: 1.65; }
     .unsupported { display: block; border-radius: 10px; padding: 12px; background: #7f1d1d; color: #fecaca; }
+    .manifest-status { margin: 0; color: #bfdbfe; }
+    .manifest-error { margin: 0; border-radius: 10px; padding: 12px; background: #7f1d1d; color: #fecaca; }
     @media (max-width: 520px) { main { padding-top: 34px; } .product-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
@@ -78,10 +80,37 @@
     const selectedName = document.querySelector("#selected-name");
     const selectedDescription = document.querySelector("#selected-description");
     const installControl = document.querySelector("#install-control");
+    let selectionRequest = 0;
 
-    function createInstaller(manifest, productName) {
+    async function createInstaller(manifest, productName) {
+      const requestId = ++selectionRequest;
+      const manifestUrl = new URL(manifest, document.baseURI).href;
+      const status = document.createElement("p");
+      status.className = "manifest-status";
+      status.textContent = `กำลังตรวจสอบเฟิร์มแวร์ ${productName}...`;
+      installControl.replaceChildren(status);
+
+      try {
+        const response = await fetch(manifestUrl, { cache: "no-store" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const manifestData = await response.json();
+        const build = manifestData.builds?.find((item) => item.chipFamily === "ESP32");
+        if (!build?.parts?.length) throw new Error("ไม่พบข้อมูลเฟิร์มแวร์ ESP32");
+      } catch (error) {
+        if (requestId !== selectionRequest) return;
+        const message = document.createElement("p");
+        message.className = "manifest-error";
+        message.textContent = `ไม่สามารถโหลดข้อมูล ${productName}: ${error.message}`;
+        installControl.replaceChildren(message);
+        return;
+      }
+
+      if (requestId !== selectionRequest) return;
       const installer = document.createElement("esp-web-install-button");
-      installer.setAttribute("manifest", manifest);
+      // กำหนดทั้ง property และ attribute เป็น URL เต็ม เพื่อให้ ESP Web Tools
+      // ดาวน์โหลด manifest ได้ถูกต้องแม้ปุ่มถูกสร้างหลังจากหน้าเว็บโหลดแล้ว
+      installer.manifest = manifestUrl;
+      installer.setAttribute("manifest", manifestUrl);
       const button = document.createElement("button");
       button.className = "install-button";
       button.setAttribute("slot", "activate");
@@ -100,7 +129,7 @@
       });
       selectedName.textContent = product.name;
       selectedDescription.textContent = product.description;
-      createInstaller(product.manifest, product.name);
+      void createInstaller(product.manifest, product.name);
     }
 
     products.forEach((product) => {
