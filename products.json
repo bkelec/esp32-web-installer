@@ -54,5 +54,21 @@
     "image": "./source/score_นับคะแนน_จับเวลา.jpg",
     "manifest": "./manifests/score-timer.json",
     "firmware": "./source/score_นับคะแนน_จับเวลา.bin"
+  },
+  {
+    "id": "kit-esp32-p5-indoor",
+    "name": "ชุดคิต ESP32 P5 indoor",
+    "description": "เฟิร์มแวร์ชุดคิต ESP32 P5 indoor สำหรับ ESP32",
+    "image": "./source/ชุดคิต ESP32 P5 indoor.png",
+    "manifest": "./manifests/kit-esp32-p5-indoor.json",
+    "firmware": "./source/ชุดคิต ESP32 P5 indoor.bin"
+  },
+  {
+    "id": "kit-esp32-p10",
+    "name": "ชุดคิต ESP32 P10",
+    "description": "เฟิร์มแวร์ชุดคิต ESP32 P10 สำหรับ ESP32",
+    "image": "./source/ชุดคิต ESP32 P10.png",
+    "manifest": "./manifests/kit-esp32-p10.json",
+    "firmware": "./source/ชุดคิต ESP32 P10.bin"
   }
 ]

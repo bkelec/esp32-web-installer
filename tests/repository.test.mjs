@@ -69,16 +69,18 @@ function github(products = [product()]) {
   return { state, client: new Repository("test-token", fetcher) };
 }
 
-test("existing seven products match their actual files and merged ESP32 headers", async () => {
+test("existing nine products match their actual images, manifests and merged ESP32 headers", async () => {
   const products = validateCatalog(JSON.parse(await readFile(new URL("../products.json", import.meta.url))));
-  assert.equal(products.length, 7);
+  assert.equal(products.length, 9);
   for (const p of products) {
     const manifest = JSON.parse(await readFile(new URL(`../${p.manifest}`, import.meta.url)));
     assert.equal(manifest.name, p.name);
     assert.equal(manifest.new_install_prompt_erase, false);
     assert.equal(manifest.builds[0].parts[0].offset, 0);
     assert.equal(manifest.builds[0].parts[0].path, `../${p.firmware.replace(/^\.\//, "")}`);
-    await readFile(new URL(`../${p.image}`, import.meta.url));
+    const image = await readFile(new URL(`../${p.image}`, import.meta.url));
+    const extension = await imageExtension(new File([image], p.image));
+    assert.ok(p.image.toLowerCase().endsWith(`.${extension}`));
     const bytes = await readFile(new URL(`../${p.firmware}`, import.meta.url));
     await validateFirmware(new File([bytes], "merged.bin"));
   }

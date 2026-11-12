@@ -1,0 +1,16 @@
+{
+  "name": "ชุดคิต ESP32 P5 indoor",
+  "version": "",
+  "new_install_prompt_erase": false,
+  "builds": [
+    {
+      "chipFamily": "ESP32",
+      "parts": [
+        {
+          "path": "../source/ชุดคิต ESP32 P5 indoor.bin",
+          "offset": 0
+        }
+      ]
+    }
+  ]
+}
