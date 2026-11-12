@@ -1,0 +1,58 @@
+[
+  {
+    "id": "pm16x32-indoor",
+    "name": "PM16x32 indoor",
+    "description": "เฟิร์มแวร์ PM16x32 indoor สำหรับ ESP32",
+    "image": "./source/PM16x32 indoor.jpg",
+    "manifest": "./manifests/pm16x32-indoor.json",
+    "firmware": "./source/PM16x32 indoor.bin"
+  },
+  {
+    "id": "pm16x32-outdoor",
+    "name": "PM16x32 outdoor",
+    "description": "เฟิร์มแวร์ PM16x32 outdoor สำหรับ ESP32",
+    "image": "./source/PM16x32 outdoor.jpg",
+    "manifest": "./manifests/pm16x32-outdoor.json",
+    "firmware": "./source/PM16x32 outdoor.bin"
+  },
+  {
+    "id": "pm16x32-outdoor-air4thai",
+    "name": "PM16x32 outdoor_air4thai",
+    "description": "เฟิร์มแวร์ PM16x32 outdoor_air4thai สำหรับ ESP32",
+    "image": "./source/PM16x32 outdoor_air4thai.jpg",
+    "manifest": "./manifests/pm16x32-outdoor-air4thai.json",
+    "firmware": "./source/PM16x32 outdoor_air4thai.bin"
+  },
+  {
+    "id": "pm32x64-full-color",
+    "name": "PM32x64_full_color",
+    "description": "เฟิร์มแวร์ PM32x64_full_color สำหรับ ESP32",
+    "image": "./source/PM32x64_full_color.jpg",
+    "manifest": "./manifests/pm32x64-full-color.json",
+    "firmware": "./source/PM32x64_full_color.bin"
+  },
+  {
+    "id": "pm32x64-mono",
+    "name": "PM32x64_mono",
+    "description": "เฟิร์มแวร์ PM32x64_mono สำหรับ ESP32",
+    "image": "./source/PM32x64_mono.jpg",
+    "manifest": "./manifests/pm32x64-mono.json",
+    "firmware": "./source/PM32x64_mono.bin"
+  },
+  {
+    "id": "score",
+    "name": "score_นับคะแนน",
+    "description": "เฟิร์มแวร์ score_นับคะแนน สำหรับ ESP32",
+    "image": "./source/score_นับคะแนน.jpg",
+    "manifest": "./manifests/score.json",
+    "firmware": "./source/score_นับคะแนน.bin"
+  },
+  {
+    "id": "score-timer",
+    "name": "score_นับคะแนน_จับเวลา",
+    "description": "เฟิร์มแวร์ score_นับคะแนน_จับเวลา สำหรับ ESP32",
+    "image": "./source/score_นับคะแนน_จับเวลา.jpg",
+    "manifest": "./manifests/score-timer.json",
+    "firmware": "./source/score_นับคะแนน_จับเวลา.bin"
+  }
+]

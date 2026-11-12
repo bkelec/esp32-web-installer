@@ -50,59 +50,8 @@
       <p class="notice">รองรับ Chrome และ Edge บนคอมพิวเตอร์<br>โปรดตรวจสอบชื่อรุ่นให้ถูกต้อง ระบบจะล้าง Flash ทั้งชิปอัตโนมัติก่อนติดตั้ง โดยไม่ถามให้เลือก Erase Flash<br>ข้อมูลเดิมใน Flash รวมถึง Wi-Fi และค่าตั้งที่บันทึกไว้จะถูกลบ</p>
     </section>
   </main>
-  <script>
-    // ชื่อสินค้า รูป เฟิร์มแวร์ และ manifest ต้องจับคู่เป็นรุ่นเดียวกัน
-    const products = [
-      {
-        id: "pm16x32-indoor",
-        name: "PM16x32 indoor",
-        description: "เฟิร์มแวร์ PM16x32 indoor สำหรับ ESP32",
-        image: "./source/PM16x32 indoor.jpg",
-        manifest: "./manifests/pm16x32-indoor.json"
-      },
-      {
-        id: "pm16x32-outdoor",
-        name: "PM16x32 outdoor",
-        description: "เฟิร์มแวร์ PM16x32 outdoor สำหรับ ESP32",
-        image: "./source/PM16x32 outdoor.jpg",
-        manifest: "./manifests/pm16x32-outdoor.json"
-      },
-      {
-        id: "pm16x32-outdoor-air4thai",
-        name: "PM16x32 outdoor_air4thai",
-        description: "เฟิร์มแวร์ PM16x32 outdoor_air4thai สำหรับ ESP32",
-        image: "./source/PM16x32 outdoor_air4thai.jpg",
-        manifest: "./manifests/pm16x32-outdoor-air4thai.json"
-      },
-      {
-        id: "pm32x64-full-color",
-        name: "PM32x64_full_color",
-        description: "เฟิร์มแวร์ PM32x64_full_color สำหรับ ESP32",
-        image: "./source/PM32x64_full_color.jpg",
-        manifest: "./manifests/pm32x64-full-color.json"
-      },
-      {
-        id: "pm32x64-mono",
-        name: "PM32x64_mono",
-        description: "เฟิร์มแวร์ PM32x64_mono สำหรับ ESP32",
-        image: "./source/PM32x64_mono.jpg",
-        manifest: "./manifests/pm32x64-mono.json"
-      },
-      {
-        id: "score",
-        name: "score_นับคะแนน",
-        description: "เฟิร์มแวร์ score_นับคะแนน สำหรับ ESP32",
-        image: "./source/score_นับคะแนน.jpg",
-        manifest: "./manifests/score.json"
-      },
-      {
-        id: "score-timer",
-        name: "score_นับคะแนน_จับเวลา",
-        description: "เฟิร์มแวร์ score_นับคะแนน_จับเวลา สำหรับ ESP32",
-        image: "./source/score_นับคะแนน_จับเวลา.jpg",
-        manifest: "./manifests/score-timer.json"
-      }
-    ];
+  <script type="module">
+    import { validateCatalog } from "./catalog.mjs";
 
     const productGrid = document.querySelector("#product-grid");
     const selectedName = document.querySelector("#selected-name");
@@ -160,35 +109,53 @@
       });
       selectedName.textContent = product.name;
       selectedDescription.textContent = product.description;
-      void createInstaller(product.manifest, product.name);
+      const manifest = new URL(product.manifest, document.baseURI);
+      if (product.revision) manifest.searchParams.set("v", product.revision);
+      void createInstaller(manifest.href, product.name);
     }
 
-    products.forEach((product) => {
-      const card = document.createElement("button");
-      card.type = "button";
-      card.className = "product-card";
-      card.dataset.productId = product.id;
-      card.setAttribute("aria-pressed", "false");
-      card.setAttribute("aria-label", `เลือกเฟิร์มแวร์ ${product.name}`);
-      const image = document.createElement("img");
-      image.className = "product-image";
-      image.src = product.image;
-      image.alt = product.name;
-      const info = document.createElement("span");
-      info.className = "product-info";
-      const name = document.createElement("span");
-      name.className = "product-name";
-      name.textContent = product.name;
-      const badge = document.createElement("span");
-      badge.className = "selected-badge";
-      badge.textContent = "เลือกแล้ว";
-      info.append(name);
-      card.append(image, info, badge);
-      card.addEventListener("click", () => selectProduct(product));
-      productGrid.append(card);
-    });
+    async function loadProducts() {
+      const response = await fetch("./products.json", { cache: "no-store" });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const products = validateCatalog(await response.json());
+      products.forEach((product) => {
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "product-card";
+        card.dataset.productId = product.id;
+        card.setAttribute("aria-pressed", "false");
+        card.setAttribute("aria-label", `เลือกเฟิร์มแวร์ ${product.name}`);
+        const image = document.createElement("img");
+        image.className = "product-image";
+        image.src = product.image;
+        image.loading = "lazy";
+        image.alt = product.name;
+        const info = document.createElement("span");
+        info.className = "product-info";
+        const name = document.createElement("span");
+        name.className = "product-name";
+        name.textContent = product.name;
+        const badge = document.createElement("span");
+        badge.className = "selected-badge";
+        badge.textContent = "เลือกแล้ว";
+        info.append(name);
+        card.append(image, info, badge);
+        card.addEventListener("click", () => selectProduct(product));
+        productGrid.append(card);
+      });
 
-    if (products.length > 0) selectProduct(products[0]);
+      if (products.length > 0) {
+        selectProduct(products[0]);
+      } else {
+        selectedName.textContent = "ยังไม่มีรายการ firmware";
+        selectedDescription.textContent = "โปรดรอผู้ดูแลเพิ่มรายการ";
+      }
+    }
+
+    loadProducts().catch((error) => {
+      selectedName.textContent = "ไม่สามารถโหลดรายการ firmware";
+      selectedDescription.textContent = error.message;
+    });
   </script>
 </body>
 </html>

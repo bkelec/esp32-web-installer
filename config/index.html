@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self' https://api.github.com; img-src 'self' blob: https://raw.githubusercontent.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>จัดการ Firmware — ESP32 Installer</title>
+  <link rel="stylesheet" href="./config.css">
+  <script type="module" src="./app.mjs"></script>
+</head>
+<body>
+  <main>
+    <header>
+      <a href="../">← กลับหน้าติดตั้ง</a>
+      <h1>จัดการ Firmware</h1>
+      <p>เพิ่มหรือแก้ไขรายการบนหน้าติดตั้ง สำหรับผู้ดูแล repository bkelec/esp32-web-installer</p>
+    </header>
+
+    <section class="panel" aria-labelledby="connection-title">
+      <h2 id="connection-title">เชื่อมต่อ GitHub</h2>
+      <p>ใช้ Fine-grained Token ที่เลือกเฉพาะ repository นี้ และให้สิทธิ์ Contents: Read and write</p>
+      <p>Token ใช้เฉพาะในแท็บนี้ ไม่บันทึกถาวร ปิดหรือรีเฟรชหน้าแล้วต้องกรอกใหม่</p>
+      <p><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">สร้าง GitHub Token ↗</a></p>
+      <form id="connect-form">
+        <fieldset id="connection-fields">
+          <label for="token">GitHub Token</label>
+          <input id="token" name="token" type="password" autocomplete="off" spellcheck="false" required placeholder="วาง Token ที่นี่">
+          <label for="branch">Branch ที่ใช้เผยแพร่ GitHub Pages</label>
+          <input id="branch" name="branch" type="text" autocomplete="off" spellcheck="false" placeholder="เว้นว่างเพื่อใช้ default branch">
+          <small>ตรวจชื่อ branch ใน repository → Settings → Pages ก่อนบันทึก</small>
+          <button type="submit">เชื่อมต่อและโหลดรายการ</button>
+        </fieldset>
+      </form>
+      <div id="connection" hidden>
+        <p id="connection-info"></p>
+        <div class="actions">
+          <button id="reload" type="button" class="secondary">โหลดรายการล่าสุด</button>
+          <button id="disconnect" type="button" class="secondary">ตัดการเชื่อมต่อ</button>
+        </div>
+      </div>
+    </section>
+
+    <p id="status" class="status" role="status" aria-live="polite">กรุณาเชื่อมต่อ GitHub เพื่อจัดการรายการ</p>
+    <section id="publication" class="panel" hidden aria-live="polite">
+      <p id="publication-status"></p>
+      <a href="https://github.com/bkelec/esp32-web-installer/actions" target="_blank" rel="noopener noreferrer">ดูสถานะเผยแพร่ใน GitHub Actions ↗</a>
+      <span> · </span><a href="../" target="_blank" rel="noopener">เปิดหน้าติดตั้ง ↗</a>
+    </section>
+
+    <div id="workspace" class="workspace" hidden>
+      <section class="panel" aria-labelledby="list-title">
+        <div class="section-heading">
+          <h2 id="list-title">รายการทั้งหมด</h2>
+          <button id="add" type="button" class="secondary">+ เพิ่มรายการ</button>
+        </div>
+        <p id="count"></p>
+        <div id="product-list" class="product-list"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="editor-title">
+        <h2 id="editor-title">เพิ่มรายการใหม่</h2>
+        <form id="editor">
+          <fieldset id="editor-fields">
+            <label for="name">ชื่อหัวข้อที่แสดงบนหน้าติดตั้ง</label>
+            <input id="name" name="name" type="text" maxlength="160" required>
+            <label for="description">คำอธิบาย (ไม่บังคับ)</label>
+            <textarea id="description" name="description" rows="3" maxlength="1000"></textarea>
+            <label for="firmware">Merged firmware (.bin)</label>
+            <input id="firmware" name="firmware" type="file" accept=".bin" required>
+            <small id="current-firmware">เลือกไฟล์รวมสำหรับ ESP32 ที่เริ่มแฟลช 0x0 ขนาดไม่เกิน 16 MB</small>
+            <label for="image">รูปสินค้า (JPG, PNG หรือ WebP)</label>
+            <input id="image" name="image" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" required>
+            <small id="current-image">ขนาดไม่เกิน 8 MB ชื่อรูปไม่จำเป็นต้องตรงกับ firmware หรือหัวข้อ</small>
+            <img id="preview" class="preview" alt="ตัวอย่างรูปสินค้า" hidden>
+            <p class="notice">ทุกครั้งที่ติดตั้ง ระบบจะล้าง Flash ทั้งชิปอัตโนมัติ รวมถึง Wi-Fi และค่าตั้งเดิม</p>
+            <p>เมื่อแก้ไขรายการ เลือกเฉพาะไฟล์ที่ต้องการเปลี่ยน ช่องไฟล์ที่เว้นว่างจะใช้ไฟล์เดิม</p>
+            <div class="actions">
+              <button id="save" type="submit">เพิ่มและบันทึก</button>
+              <button id="delete" type="button" class="danger" hidden>ลบรายการ</button>
+            </div>
+          </fieldset>
+        </form>
+      </section>
+    </div>
+    <noscript><p class="status">กรุณาเปิด JavaScript เพื่อใช้งานหน้าจัดการ</p></noscript>
+  </main>
+</body>
+</html>

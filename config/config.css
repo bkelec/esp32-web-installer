@@ -1,0 +1,35 @@
+:root { color-scheme: dark; font-family: "Noto Sans Thai", Arial, sans-serif; color: #f8fafc; background: #08111f; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { width: min(1100px, calc(100% - 32px)); margin: auto; padding: 36px 0 64px; }
+h1 { margin: 22px 0 12px; font-size: clamp(1.8rem, 5vw, 2.6rem); }
+h2 { font-size: 1.25rem; margin: 0 0 12px; }
+p, small { line-height: 1.7; color: #b6c5d7; overflow-wrap: anywhere; }
+a { color: #93c5fd; }
+.panel { border: 1px solid #30425b; background: #111d2e; border-radius: 16px; padding: 24px; margin: 22px 0; min-width: 0; }
+fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+label { display: block; margin: 18px 0 8px; font-weight: 700; }
+input, textarea { width: 100%; border: 1px solid #455b78; border-radius: 8px; padding: 12px; font: inherit; background: #08111f; color: #f8fafc; }
+input[type="file"] { font-size: .9rem; }
+small { display: block; margin-top: 8px; }
+button { border: 1px solid transparent; border-radius: 8px; padding: 12px 16px; background: #15803d; color: white; font: inherit; font-weight: 700; cursor: pointer; }
+button:hover { filter: brightness(1.15); }
+button:disabled, fieldset:disabled { opacity: .6; cursor: wait; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visible { outline: 3px solid #93c5fd; outline-offset: 3px; }
+#connect-form button { margin-top: 20px; }
+.secondary { background: #243750; border-color: #49617e; }
+.danger { background: #991b1b; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+.workspace { display: grid; grid-template-columns: minmax(240px, .8fr) minmax(0, 1.4fr); gap: 22px; align-items: start; }
+.workspace .panel { margin: 0; }
+.section-heading { display: flex; gap: 10px; flex-wrap: wrap; justify-content: space-between; align-items: center; }
+.section-heading h2 { margin: 0; }
+.product-list { display: grid; gap: 10px; }
+.product-list button { background: #17263a; text-align: left; overflow-wrap: anywhere; }
+.product-list button[aria-pressed="true"] { border-color: #4ade80; background: #12352d; }
+.preview { display: block; width: 100%; max-height: 320px; object-fit: contain; border-radius: 10px; margin-top: 18px; background: #08111f; }
+.status { border-radius: 10px; padding: 15px; background: #142b49; color: #dbeafe; white-space: pre-line; }
+.status.error { background: #551c22; color: #fecaca; }
+.notice { background: #3e3114; color: #fde68a; padding: 12px; border-radius: 8px; }
+[hidden] { display: none !important; }
+@media (max-width: 760px) { .workspace { grid-template-columns: 1fr; } .panel { padding: 18px; } }
