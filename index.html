@@ -47,7 +47,7 @@
       <h2 id="selected-name"></h2>
       <p id="selected-description"></p>
       <div id="install-control"></div>
-      <p class="notice">รองรับ Chrome และ Edge บนคอมพิวเตอร์<br>โปรดตรวจสอบชื่อรุ่นให้ถูกต้อง และไม่ต้องเลือก Erase Flash</p>
+      <p class="notice">รองรับ Chrome และ Edge บนคอมพิวเตอร์<br>โปรดตรวจสอบชื่อรุ่นให้ถูกต้อง ระบบจะล้าง Flash ทั้งชิปอัตโนมัติก่อนติดตั้ง โดยไม่ถามให้เลือก Erase Flash<br>ข้อมูลเดิมใน Flash รวมถึง Wi-Fi และค่าตั้งที่บันทึกไว้จะถูกลบ</p>
     </section>
   </main>
   <script>
@@ -73,6 +73,34 @@
         description: "เฟิร์มแวร์ PM16x32 outdoor_air4thai สำหรับ ESP32",
         image: "./source/PM16x32 outdoor_air4thai.jpg",
         manifest: "./manifests/pm16x32-outdoor-air4thai.json"
+      },
+      {
+        id: "pm32x64-full-color",
+        name: "PM32x64_full_color",
+        description: "เฟิร์มแวร์ PM32x64_full_color สำหรับ ESP32",
+        image: "./source/PM32x64_full_color.jpg",
+        manifest: "./manifests/pm32x64-full-color.json"
+      },
+      {
+        id: "pm32x64-mono",
+        name: "PM32x64_mono",
+        description: "เฟิร์มแวร์ PM32x64_mono สำหรับ ESP32",
+        image: "./source/PM32x64_mono.jpg",
+        manifest: "./manifests/pm32x64-mono.json"
+      },
+      {
+        id: "score",
+        name: "score_นับคะแนน",
+        description: "เฟิร์มแวร์ score_นับคะแนน สำหรับ ESP32",
+        image: "./source/score_นับคะแนน.jpg",
+        manifest: "./manifests/score.json"
+      },
+      {
+        id: "score-timer",
+        name: "score_นับคะแนน_จับเวลา",
+        description: "เฟิร์มแวร์ score_นับคะแนน_จับเวลา สำหรับ ESP32",
+        image: "./source/score_นับคะแนน_จับเวลา.jpg",
+        manifest: "./manifests/score-timer.json"
       }
     ];
 
@@ -96,6 +124,7 @@
         const manifestData = await response.json();
         const build = manifestData.builds?.find((item) => item.chipFamily === "ESP32");
         if (!build?.parts?.length) throw new Error("ไม่พบข้อมูลเฟิร์มแวร์ ESP32");
+        await customElements.whenDefined("esp-web-install-button");
       } catch (error) {
         if (requestId !== selectionRequest) return;
         const message = document.createElement("p");
@@ -111,6 +140,8 @@
       // ดาวน์โหลด manifest ได้ถูกต้องแม้ปุ่มถูกสร้างหลังจากหน้าเว็บโหลดแล้ว
       installer.manifest = manifestUrl;
       installer.setAttribute("manifest", manifestUrl);
+      // ให้ทุกครั้งเป็นการติดตั้งใหม่แบบล้างทั้งชิป แม้พบ firmware ชื่อเดิมผ่าน Improv Serial
+      installer.overrides = { checkSameFirmware: () => false };
       const button = document.createElement("button");
       button.className = "install-button";
       button.setAttribute("slot", "activate");

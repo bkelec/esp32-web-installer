@@ -1,0 +1,16 @@
+{
+  "name": "score_นับคะแนน",
+  "version": "",
+  "new_install_prompt_erase": false,
+  "builds": [
+    {
+      "chipFamily": "ESP32",
+      "parts": [
+        {
+          "path": "../source/score_นับคะแนน.bin",
+          "offset": 0
+        }
+      ]
+    }
+  ]
+}

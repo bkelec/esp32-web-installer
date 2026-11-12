@@ -1,0 +1,16 @@
+{
+  "name": "score_นับคะแนน_จับเวลา",
+  "version": "",
+  "new_install_prompt_erase": false,
+  "builds": [
+    {
+      "chipFamily": "ESP32",
+      "parts": [
+        {
+          "path": "../source/score_นับคะแนน_จับเวลา.bin",
+          "offset": 0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "PM32x64_mono",
+  "version": "",
+  "new_install_prompt_erase": false,
+  "builds": [
+    {
+      "chipFamily": "ESP32",
+      "parts": [
+        {
+          "path": "../source/PM32x64_mono.bin",
+          "offset": 0
+        }
+      ]
+    }
+  ]
+}

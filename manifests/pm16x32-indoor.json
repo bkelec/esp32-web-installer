@@ -1,7 +1,7 @@
 {
   "name": "PM16x32 indoor",
   "version": "",
-  "new_install_prompt_erase": true,
+  "new_install_prompt_erase": false,
   "builds": [
     {
       "chipFamily": "ESP32",
