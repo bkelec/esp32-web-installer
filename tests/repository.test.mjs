@@ -69,20 +69,25 @@ function github(products = [product()]) {
   return { state, client: new Repository("test-token", fetcher) };
 }
 
-test("existing nine products match their actual images, manifests and merged ESP32 headers", async () => {
+test("catalog products match their actual images, manifests and merged ESP32 headers", async (t) => {
   const products = validateCatalog(JSON.parse(await readFile(new URL("../products.json", import.meta.url))));
-  assert.equal(products.length, 9);
+  assert.equal(products.length, 10);
+  assert.deepEqual(products.filter(p => p.installBlockedReason).map(p => p.id), ["kit-esp32-p10"]);
   for (const p of products) {
-    const manifest = JSON.parse(await readFile(new URL(`../${p.manifest}`, import.meta.url)));
-    assert.equal(manifest.name, p.name);
-    assert.equal(manifest.new_install_prompt_erase, false);
-    assert.equal(manifest.builds[0].parts[0].offset, 0);
-    assert.equal(manifest.builds[0].parts[0].path, `../${p.firmware.replace(/^\.\//, "")}`);
-    const image = await readFile(new URL(`../${p.image}`, import.meta.url));
-    const extension = await imageExtension(new File([image], p.image));
-    assert.ok(p.image.toLowerCase().endsWith(`.${extension}`));
-    const bytes = await readFile(new URL(`../${p.firmware}`, import.meta.url));
-    await validateFirmware(new File([bytes], "merged.bin"));
+    await t.test(p.name, async () => {
+      const manifest = JSON.parse(await readFile(new URL(`../${p.manifest}`, import.meta.url)));
+      assert.equal(manifest.name, p.name);
+      assert.equal(manifest.new_install_prompt_erase, false);
+      assert.equal(manifest.builds[0].parts[0].offset, 0);
+      assert.equal(manifest.builds[0].parts[0].path, `../${p.firmware.replace(/^\.\//, "")}`);
+      const image = await readFile(new URL(`../${p.image}`, import.meta.url));
+      const extension = await imageExtension(new File([image], p.image));
+      assert.ok(p.image.toLowerCase().endsWith(`.${extension}`));
+      const bytes = await readFile(new URL(`../${p.firmware}`, import.meta.url));
+      const firmware = new File([bytes], "merged.bin");
+      if (p.installBlockedReason) await assert.rejects(validateFirmware(firmware));
+      else await validateFirmware(firmware);
+    });
   }
 });
 

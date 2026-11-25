@@ -16,6 +16,14 @@
     "firmware": "./source/PM16x32 outdoor.bin"
   },
   {
+    "id": "pm16x32-outdoor-new-sign",
+    "name": "PM16x32 outdoor ป้ายใหม่",
+    "description": "เฟิร์มแวร์ PM16x32 outdoor ป้ายใหม่ สำหรับ ESP32",
+    "image": "./source/PM16x32 outdoor ป้ายใหม่.jpg",
+    "manifest": "./manifests/pm16x32-outdoor-new-sign.json",
+    "firmware": "./source/PM16x32 outdoor ป้ายใหม่.bin"
+  },
+  {
     "id": "pm16x32-outdoor-air4thai",
     "name": "PM16x32 outdoor_air4thai",
     "description": "เฟิร์มแวร์ PM16x32 outdoor_air4thai สำหรับ ESP32",
@@ -69,6 +77,7 @@
     "description": "เฟิร์มแวร์ชุดคิต ESP32 P10 สำหรับ ESP32",
     "image": "./source/ชุดคิต ESP32 P10.png",
     "manifest": "./manifests/kit-esp32-p10.json",
-    "firmware": "./source/ชุดคิต ESP32 P10.bin"
+    "firmware": "./source/ชุดคิต ESP32 P10.bin",
+    "installBlockedReason": "ไฟล์เฟิร์มแวร์รุ่นนี้ยังไม่ใช่ merged .bin สำหรับแฟลชที่ 0x0 กรุณาให้ผู้ดูแลอัปโหลดไฟล์ที่ถูกต้อง"
   }
 ]
