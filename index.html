@@ -109,14 +109,6 @@
       });
       selectedName.textContent = product.name;
       selectedDescription.textContent = product.description;
-      if (product.installBlockedReason) {
-        ++selectionRequest;
-        const message = document.createElement("p");
-        message.className = "manifest-error";
-        message.textContent = product.installBlockedReason;
-        installControl.replaceChildren(message);
-        return;
-      }
       const manifest = new URL(product.manifest, document.baseURI);
       if (product.revision) manifest.searchParams.set("v", product.revision);
       void createInstaller(manifest.href, product.name);

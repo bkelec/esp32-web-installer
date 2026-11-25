@@ -18,7 +18,6 @@ export function validateCatalog(products) {
     if (!product || typeof product.id !== "string" || !/^[a-z0-9][a-z0-9-]{0,79}$/.test(product.id) || ids.has(product.id) ||
         typeof product.name !== "string" || !product.name.trim() || product.name.length > 160 ||
         typeof product.description !== "string" || product.description.length > 1000 ||
-        (product.installBlockedReason !== undefined && (typeof product.installBlockedReason !== "string" || !product.installBlockedReason.trim() || product.installBlockedReason.length > 300)) ||
         (product.revision !== undefined && (typeof product.revision !== "string" || !/^[a-zA-Z0-9-]{1,80}$/.test(product.revision)))) {
       throw new Error("ข้อมูลรายการ firmware ไม่ถูกต้องหรือมีรหัสซ้ำ");
     }

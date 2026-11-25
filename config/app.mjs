@@ -190,7 +190,6 @@ $("editor").addEventListener("submit", async event => {
       firmware: firmware ? `./source/${id}-${revision}.bin` : current.firmware,
       manifest: current?.manifest || `./manifests/${id}.json`, revision
     };
-    if (firmware) delete product.installBlockedReason;
     const writes = [{ path: product.manifest.replace(/^\.\//, ""), text: JSON.stringify(createManifest(product), null, 2) + "\n" }];
     if (firmware) writes.push({ path: product.firmware.slice(2), bytes: new Uint8Array(await firmware.arrayBuffer()) });
     if (image) writes.push({ path: product.image.slice(2), bytes: new Uint8Array(await image.arrayBuffer()) });

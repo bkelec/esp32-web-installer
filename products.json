@@ -77,7 +77,6 @@
     "description": "เฟิร์มแวร์ชุดคิต ESP32 P10 สำหรับ ESP32",
     "image": "./source/ชุดคิต ESP32 P10.png",
     "manifest": "./manifests/kit-esp32-p10.json",
-    "firmware": "./source/ชุดคิต ESP32 P10.bin",
-    "installBlockedReason": "ไฟล์เฟิร์มแวร์รุ่นนี้ยังไม่ใช่ merged .bin สำหรับแฟลชที่ 0x0 กรุณาให้ผู้ดูแลอัปโหลดไฟล์ที่ถูกต้อง"
+    "firmware": "./source/ชุดคิต ESP32 P10.bin"
   }
 ]
